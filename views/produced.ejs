@@ -1,0 +1,81 @@
+﻿<!-- views/plquotas.ejs -->
+<!doctype html>
+<html>
+<head>
+	<title>Production Lines Quota - Closing day</title>	
+	<% include ./partials/head %>
+</head>
+<body>
+<div class="container">
+<header>
+    <div class="page-header text-center">
+       <h1><span class="fa fa-anchor"></span> Closing day</h1>	
+	</div>
+	<div class="page-header text-right">
+        <label>Welcome <%= user.local.username  + "(" + user.local.name + ")" %> </label>        
+		 <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+    </div>	
+	<% if (user.local.isAdmin) { %>
+		<% include ./partials/headerA %>				
+	<%} else {%>
+		<% include ./partials/headerU %>				
+	<% } %>		
+</header>
+    <!-- show any messages that come back with authentication -->
+    <% if (message.length > 0) { %>
+		<div class="alert alert-danger"> <%= message %> </div>
+    <% } %>
+	<% if ((status != null) && (status.length > 0)) { %>
+			<div class="alert alert-info"><%= status %></div>
+    <% } %>
+    <div class="row" align="center">
+      <form action="/produced" method="post" name="form">
+	   	<table>	
+			<tr>
+				<td><label>Production Line &nbsp &nbsp</label></td>
+				<td><label>In &nbsp &nbsp</label></td>
+				<td><label>To produce (Quota) &nbsp &nbsp</label></td>
+				<td><label>Produced &nbsp &nbsp</label></td>
+				<td><label>Workers present &nbsp &nbsp</label></td>
+				<td><label>Workers total &nbsp &nbsp</label></td>
+				<td><label>Date to close &nbsp &nbsp</label></td>
+			</tr>
+			<% if(items != null){  %>
+				<% for(var i = 0;i < items.length; i++) { %>
+					<tr>
+						<td>
+							<%= items[i]["ProdLineCode"] + '   ' %> 
+							<input type="hidden" name="<%="lbl_" + items[i]["ProdLineCode"] %>" value="<%="lbl_" + items[i]["ProdLineCode"] %>"></input>
+						</td>
+						<td>
+							<input type="number" name="<%=items[i]["ProdLineCode"] + "`~`Input" %>" value="0" min="0"></input>						
+						</td>
+						<td>
+							<%= items[i]["Quota"] + '   ' %> 
+							<input type="hidden" name="<%=items[i]["ProdLineCode"] + "`~`Quota" %>" value="<%=items[i]["Quota"] %>"></input>						
+						</td>
+						<td>
+							<input type="number" name="<%=items[i]["ProdLineCode"] + "`~`Produced"%>" value = "0" min="0"></input>
+						</td>
+						<td>
+							<input type="number" name="<%=items[i]["ProdLineCode"] + "`~`WPresent"%>" value = "0" min="0"></input>
+						</td>
+						<td>
+							<input type="number" name="<%=items[i]["ProdLineCode"] + "`~`WTotal"%>" value = "1" min="1"></input>
+						</td>
+						<td>
+							<input type="date" name="<%=items[i]["ProdLineCode"] + "`~`Data"%>"></input>
+						</td>
+					</tr>                
+				<% } %>
+			<%} %>
+		</table>
+		<button type="submit" class="btn btn-warning btn-lg" name="prodFormSubmit" value="Modify">Close day</button>						
+      </form>
+    </div>
+</div>
+ <footer>
+        <% include ./partials/footer %>
+ </footer>
+</body>
+</html>

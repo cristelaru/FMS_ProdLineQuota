@@ -1,0 +1,92 @@
+﻿<!-- views/settings.ejs -->
+<!doctype html>
+<html>
+<head>
+	<title>Production Lines Quota - Settings</title>	
+	<% include ./partials/head %>
+
+	<script type="text/javascript" language="javascript">
+        function FilterInput (event) {
+            var keyCode = ('which' in event) ? event.which : event.keyCode;
+
+            isAsterix = (keyCode == 222);
+			//alert(keyCode);
+            modifiers = (event.shiftKey);
+            return !isAsterix || modifiers;
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+<header>
+    <div class="page-header text-center">
+       <h1><span class="fa fa-anchor"></span> Settings</h1>	
+	</div>
+	<div class="page-header text-right">
+        <label>Welcome <%= user.local.username  + "(" + user.local.name + ")" %> </label>        
+		 <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+    </div>
+	
+	<%include ./partials/headerA %>
+	
+</header>
+    <!-- show any messages that come back with authentication -->
+    <% if (message.length > 0) { %>
+			<div class="alert alert-danger"> <%= message %> </div>
+    <% } %>
+	<% if ((status != null) && (status.length > 0)) { %>
+			<div class="alert alert-info"><%= status %></div>
+    <% } %>
+    <div class="row" align="center">
+      <form action="/settings" method="post" name="form">
+	   	<table>	
+			<tr>
+				<td><label>Setting description &nbsp &nbsp</label></td>
+				<td><label>Value/Action &nbsp &nbsp</label></td>
+			</tr>
+			<tr>
+				<td>Get missing Production Lines from FORMENS database</td>
+				<td><button type="submit" class="btn btn-warning btn-lg" name="settingsFormSubmit" value="GetMissingPL">Get data</button>
+			</tr>
+			<% if(users != null){ %>
+				<tr>
+					<td>Give to/revoke from selected user Administrator rights</td>
+					<td>
+					 <select name="selecteduser" id="selecteduser">
+						<%for ( var i = 0; i < users.length; i++ )
+						{
+							var selected = ( users[i]["UserCode"] == user.local.username ) ? "selected" : ""; %>
+							<option value="<%=users[i]["UserCode"]%>" <%=selected %>> <%=users[i]["UserCode"]%> </option>
+						<%} %>
+					 </select>
+					 <button type="submit" class="btn btn-warning btn-lg" name="settingsFormSubmit" value="CreateAdmin" 
+						onclick="return confirm('Are you sure you want to give Administrator rights to the selected user?');return false;">Give</button>
+					 <button type="submit" class="btn btn-warning btn-lg" name="settingsFormSubmit" value="RevokeAdmin" 
+						onclick="return confirm('Are you sure you want to revoke Administrator rights from the selected user?');return false;">Revoke</button>
+					</td>					
+				</tr>
+			<%} %>
+			<% if(items != null){  %>
+				<% for(var i = 0;i < items.length; i++) { %>
+					<tr>
+						<td>
+							<%= items[i]["SettingCode"] + '   ' %> 
+							<input type="hidden" name="<%="lbl_" + items[i]["SettingCode"] %>" value="<%="lbl_" + items[i]["SettingCode"] %>"></input>
+						</td>
+						<td>							
+							<input type="text" name="<%=items[i]["SettingCode"] + "`~`Value"%>" value="<%=items[i]["Value"]%>" onkeydown="return FilterInput (event)"></input>
+						</td>
+					</tr>                 
+				<% } %>
+			<%} %>
+		</table>
+		<button type="submit" class="btn btn-warning btn-lg" name="settingsFormSubmit" value="Modify">Update</button>
+      </form>
+    </div>
+</div>
+
+ <footer>
+        <% include ./partials/footer %>
+ </footer>
+</body>
+</html>

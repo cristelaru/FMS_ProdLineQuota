@@ -1,0 +1,29 @@
+{
+  "name": "production-quota",
+  "version": "0.0.0",
+  "description": "ProductionQuota",
+  "main": "app.js",
+  "author": {
+    "name": "cristi.vitelaru",
+    "email": ""
+  },
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.15.2",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.5.5",
+    "express": "3.4.4",
+    "express-session": "^1.14.2",
+    "jade": "^1.11.0",
+    "method-override": "^2.3.7",
+    "morgan": "^1.7.0",
+    "mssql": "^3.3.0",
+    "nconf": "^0.8.4",
+    "nib": "^1.1.2",
+    "nodemailer": "^2.7.0",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "stylus": "^0.54.5"
+  }
+}

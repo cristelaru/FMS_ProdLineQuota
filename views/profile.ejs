@@ -1,0 +1,140 @@
+﻿<!-- views/profile.ejs -->
+<!doctype html>
+<html>
+<head>
+    <title>Production Lines Quota - Profiles</title>
+    <% include ./partials/head %>
+
+	<script type="text/javascript" language="javascript">
+        function FilterInput (event) {
+            var keyCode = ('which' in event) ? event.which : event.keyCode;
+
+            isAsterix = (keyCode == 222);
+			//alert(keyCode);
+            modifiers = (event.shiftKey);
+            return !isAsterix || modifiers;
+        }
+    </script>
+</head>
+<body>
+	<div class="container">
+		<header>
+			<div class="page-header text-center">
+			<h1><span class="fa fa-anchor"></span> Profiles </h1>
+			</div>
+			<div class="page-header text-right">
+				<label>Welcome <%= user.local.username  + " (" + user.local.name + ")  " %> </label>        
+					<a href="/logout" class="btn btn-default btn-sm">Logout</a>
+			</div>
+			<% if (user.local.isAdmin) { %>
+				<% include ./partials/headerA %>				
+			<%} else {%>
+				<% include ./partials/headerU %>				
+			<% } %>			
+		</header>
+	    <!-- show any messages that come back with authentication -->
+        <% if (message.length > 0) { %>
+			<div class="alert alert-danger">
+			  <%= message %>
+			</div>
+        <% } %>
+		<div class="row" align="center">
+			<form action="/profile" method="post">
+				<table>	
+					<tr>
+						<% if(columns != null) {
+							for(var i = 0;i < columns.length;i++) {    %>
+								<td>
+									<label>
+									<% switch(columns[i]){
+										case "UserCode":%> <%=" User"%> <% break; 
+										case "Pass":%> <%="Password"%> <% break;
+										case "UserName":%> <%="Full Name"%> <% break;
+										case "Email":%> <%="E-mail"%> <% break;
+										default: %> <%=columns[i]%> <% ;                 
+									} %>            
+                  
+									</label>
+								</td>
+							<% } %>
+							<td>
+								<label>Actions</label>
+							</td>
+						<% } %>						
+					</tr>				
+					<% if(items != null){          
+						 if (user.local.isAdmin) { %>
+							<tr>
+								<% for (var j = 0; j < columns.length; j++) { %>
+									<td>
+										<% if (columns[j] == "Pass") {%>
+											<input type="password" class="form-control" name="password" value="New User"> </input>
+										<%} else { %>
+											<% if (columns[j] == "UserCode") {%>
+												<input type="text" class="form-control" name="username" value="New User" onkeydown="return FilterInput (event)"> </input>
+											<%} else { %>
+												<input type="text" class="form-control" name = "<%= columns[j]%>" onkeydown="return FilterInput (event)"> </input>
+											<%}
+										}%>
+									</td>
+								<% } %>
+								<td>
+									<button type="submit" class="btn btn-warning btn-lg" name="usersFormSubmit" value="InsertNew">Insert</button>
+								</td>
+							</tr>			
+							<% for(var i = 0;i < items.length;i++) { %>
+								<tr>
+									<% for (var j in items[i]) { %>
+										<td>
+											<% if (j == "Pass") {%>
+												<input type="password" class="form-control" name="<%= items[i]["UserCode"] + "`~`" + j %>"></input>
+											<%} else { %>
+												<input type="text" class="form-control" name="<%= items[i]["UserCode"] + "`~`" + j %>" value="<%=items[i][j]%>" onkeydown="return FilterInput (event)"></input>
+											<%} %>									
+										</td>	
+									<% } %>	
+									<td>
+										<button type="submit" class="btn btn-warning btn-lg" name = "usersFormSubmit" value="<%= "btnUpd_" + items[i]["UserCode"] %>">Update</button>
+										<button type="submit" class="btn btn-warning btn-lg" name = "usersFormSubmit" value="<%= "btnDel_" + items[i]["UserCode"] %>" 
+											onclick="return confirm('Are you sure you want to delete the \'<%= items[i]["UserCode"] %>\' user?');return false;">Delete</button>
+										<!--button type="submit" class="btn btn-warning btn-lg" name = "usersFormSubmit" value="<%= "btnPrd_" + items[i]["UserCode"] %>">Prod. Lines</button-->
+									</td>									
+								</tr>
+							<% } %>
+											
+						<% } else {
+							for(var i = 0;i < items.length;i++) { 
+								if (user.local.username == items[i]["UserCode"]) {%>
+									<tr>
+										<% for (var j in items[i]) { %>
+											<td>
+												<% if (j == "Pass") {%>
+													<input type="password" class="form-control" name="<%= items[i]["UserCode"] + "`~`" + j %>"></input>
+												<%} else { 
+													if (j == "UserCode") {%>
+														<label><%=items[i][j]%></label>
+													<%} else { %>
+														<input type="text" class="form-control" name="<%= items[i]["UserCode"] + "`~`" + j %>" value="<%=items[i][j]%>" onkeydown="return FilterInput (event)"></input>
+													<%} 
+												} %>
+											</td>
+										<% } %>
+										<td>
+											<button type="submit" class="btn btn-warning btn-lg" name = "usersFormSubmit" value="<%= "btnUpd_" + items[i]["UserCode"] %>">Update</button>
+										</td>		
+									</tr>
+								<% } 
+							}
+						}
+					} %>
+				</table>
+			</form>
+		</div>
+
+	</div>
+	
+	<footer>
+		<% include ./partials/footer %>
+	</footer>
+</body>
+</html>

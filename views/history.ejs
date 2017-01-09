@@ -1,0 +1,123 @@
+﻿<!-- views/history.ejs -->
+<!doctype html>
+<html>
+<head>
+	<title>Production Lines Quota - Production Lines Quota</title>	
+	<% include ./partials/head %>
+
+	<script type="text/javascript" language="javascript">
+        function FilterInput (event) {
+            var keyCode = ('which' in event) ? event.which : event.keyCode;
+
+            isAsterix = (keyCode == 222);
+			//alert(keyCode);
+            modifiers = (event.shiftKey);
+            return !isAsterix || modifiers;
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+<header>
+    <div class="page-header text-center">
+       <h1><span class="fa fa-anchor"></span> Production Lines Quota</h1>	
+	</div>
+	<div class="page-header text-right">
+        <label>Welcome <%= user.local.username  + "(" + user.local.name + ")" %> </label>        
+		 <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+    </div>
+	
+	<%include ./partials/headerA %>
+	
+</header>
+    <!-- show any messages that come back with authentication -->
+    <% if (message.length > 0) { %>
+			<div class="alert alert-danger"> <%= message %> </div>
+    <% } %>
+	
+    <div class="row" align="center">
+      <form action="/history" method="post" name="form">
+	    <% if ((((((filter != null) && (filter != '')) || ((dStart != null) && (dStart != ''))) || ((dEnd != null) && (dEnd != ''))) || ((frequency != null) && (frequency != '')))) { %>
+			<label>Applied filter : 
+			<%if ((filter != null) && (filter != '')) {%>
+				<%=" Production line: '" + filter + "',"%>			
+			<%}%>
+			<%if ((dStart != null) && (dStart != '')) {%>
+				<%=" Start Date: '" + dStart + "',"%>		
+			<%}%>
+			<%if ((dEnd != null) && (dEnd != '')) {%>
+				<%=" End Date: '" + dEnd + "',"%>	
+			<%}%>
+			<%if ((frequency != null) && (frequency != '')) {%>
+				<%=" Interval: '" + frequency + "'"%>		
+			<%}%>
+			</label><hr>
+		<%} %>
+			<table>	
+				<tr>
+					<td>Production Line &nbsp<input type="text" name="filterProdLineCode" onkeydown="return FilterInput (event)"></input></td>
+					<td>Start date &nbsp<input type="date" name="filterStartDate""></input></td>
+					<td>End date &nbsp<input type="date" name="filterEndDate""></input></td>
+					<td>Interval &nbsp<select name="filterFreq" id="filterFreq">
+							<%if ( frequency != null ) { %>
+								<option value="Day" <%=( frequency == "Day" ) ? "selected" : ""; %>> Day </option>
+								<option value="Week" <%=( frequency == "Week" ) ? "selected" : ""; %>> Week </option>
+								<option value="Month" <%=( frequency == "Month" ) ? "selected" : ""; %>> Month </option>
+								<option value="Year" <%=( frequency == "Year" ) ? "selected" : ""; %>> Year </option>
+							<%} else { %>
+								<option value="Day" "selected"> Day </option>
+								<option value="Week"> Week </option>
+								<option value="Month"> Month </option>
+								<option value="Year"> Year </option>
+							<% } %>
+						</select>
+					 </td>
+					<td><button type="submit" class="btn btn-warning btn-lg" name="histFormSubmit" value="FilterHistory">Apply filter</button></td>
+				</tr>
+			</table> <br>
+		<% if(items != null){  %>        
+			<table border="1" cellpadding="5">
+				<tr>
+					<td align="center"><label>Production<br>Line Code</label></td>
+					<%if (frequency == "Day") { %>
+						<td align="center"><label>User to<br>close the day</label></td>
+					<%} %>
+					<td align="center"><label><%=frequency%></label></td>
+					<td align="center"><label><%if (frequency != "Day") { %> <%="Total "%><br> <%} %> In</label></td>
+					<td align="center"><label><%if (frequency != "Day") { %> <%="Total "%><br> <%} %> Produced</label></td>
+					<td align="center"><label><%if (frequency != "Day") { %> <%="Total to "%><br> <%} else { %> <%="To"%><br> <%} %> Produce<br>(Quota)</label></td>
+					<td align="center"><label>Produced %</label></td>
+					<td align="center"><label><%if (frequency != "Day") { %> <%="Average "%><br> <%} %>Present<br>Workers</label></td>
+					<td align="center"><label><%if (frequency != "Day") { %> <%="Average "%><br> <%} %>Total<br>Workers</label></td>
+					<td align="center"><label>Present<br>Workers %</label></td>
+					<td align="center"><label><%if (frequency != "Day") { %> <%="Average "%><br> <%} %>Productivity</label></td>
+				</tr>
+				<% for(var i = 0;i < items.length; i++) { %>
+					<tr>
+						<td><%= items[i]["ProdLineCode"]%></td>
+						<%if (frequency == "Day") { %>
+							<td><%= items[i]["UserCode"]%> </td>
+						<%} %>
+						<td><%= items[i]["DataRegistered"]%></td>
+						<td><%= items[i]["Input"]%></td>
+						<td><%= items[i]["Produced"]%></td>
+						<td><%= items[i]["Quota"]%></td>
+						<td><%= items[i]["ProcProd"]%></td>
+						<td><%= items[i]["PersonalPrezent"]%></td>
+						<td><%= items[i]["PersonalTotal"]%></td>
+						<td><%= items[i]["ProcWorkers"]%></td>
+						<td><%= items[i]["Productivity"]%></td>
+					</tr>             
+            
+				<% } %>
+			</table>			
+		<%} %>
+	  </form>
+    </div>
+</div>
+
+ <footer>
+        <% include ./partials/footer %>
+ </footer>
+</body>
+</html>

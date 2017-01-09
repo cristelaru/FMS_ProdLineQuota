@@ -1,0 +1,83 @@
+﻿<!-- views/plquotas.ejs -->
+<!doctype html>
+<html>
+<head>
+	<title>Production Lines Quota - Production Lines Quota</title>	
+	<% include ./partials/head %>
+
+	<script type="text/javascript" language="javascript">
+        function FilterInput (event) {
+            var keyCode = ('which' in event) ? event.which : event.keyCode;
+
+            isAsterix = (keyCode == 222);
+			//alert(keyCode);
+            modifiers = (event.shiftKey);
+            return !isAsterix || modifiers;
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+<header>
+    <div class="page-header text-center">
+       <h1><span class="fa fa-anchor"></span> Production Lines Quota</h1>	
+	</div>
+	<div class="page-header text-right">
+        <label>Welcome <%= user.local.username  + "(" + user.local.name + ")" %> </label>        
+		 <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+    </div>
+	
+	<%include ./partials/headerA %>
+	
+</header>
+    <!-- show any messages that come back with authentication -->
+    <% if (message.length > 0) { %>
+			<div class="alert alert-danger"> <%= message %> </div>
+    <% } %>
+	<% if ((status != null) && (status.length > 0)) { %>
+			<div class="alert alert-info"><%= status %></div>
+    <% } %>
+    <div class="row" align="center">
+      <form action="/plquotas" method="post" name="form">
+	    <%if ((filter != null) && (filter != '')) {%>
+			<label>Applied filter : '<%=filter%>'</label>
+			<hr>
+		<%}%>
+		<% if(items != null){  %>        
+			<table>	
+				<tr>
+					<td><input type="text" name="filterProdLineCode" onkeydown="return FilterInput (event)"></input></td>
+					<td><button type="submit" class="btn btn-warning btn-lg" name="uplFormSubmit" value="FilterQuotas">Apply filter</button></td>
+				</tr>
+				<tr>
+					<td><label>Production Line Code &nbsp &nbsp</label></td>
+					<td><label>Quota &nbsp &nbsp</label></td>
+					<td>&nbsp &nbsp <label>Last Modified &nbsp &nbsp</label></td>
+					<td>&nbsp &nbsp <label>Last Modified By &nbsp &nbsp</label></td>
+				</tr>
+				<% for(var i = 0;i < items.length; i++) { %>
+					<tr>
+						<td>
+							<%= items[i]["ProdLineCode"] + '   ' %> 
+							<input type="hidden" name="<%="lbl_" + items[i]["ProdLineCode"] %>" value="<%="lbl_" + items[i]["ProdLineCode"] %>"></input>
+						</td>
+						<td>
+							<input type="number" name="<%=items[i]["ProdLineCode"] + "`~`Quota"%>" value = "<%=items[i]["Quota"]%>" min="0"></input>
+						</td>
+						<td>&nbsp &nbsp<%=items[i]["LastModified"]%></td>
+						<td>&nbsp &nbsp &nbsp<%=items[i]["UserCode"]%></td>
+					</tr>             
+            
+				<% } %>
+			</table>
+			<button type="submit" class="btn btn-warning btn-lg" name="uplFormSubmit" value="Modify">Update</button>
+		<%} %>
+	  </form>
+    </div>
+</div>
+
+ <footer>
+        <% include ./partials/footer %>
+ </footer>
+</body>
+</html>

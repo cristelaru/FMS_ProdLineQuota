@@ -1,0 +1,142 @@
+﻿<!-- views/profile.ejs -->
+<!doctype html>
+<html>
+<head>
+	<%if (currentuser != null) {%>
+		<title>Production Lines Quota - Production Lines for '<%= currentuser %>' </title>
+   	<%} else {%>
+		<title>Production Lines Quota - Production Lines</title>	
+	<%} %>
+    <% include ./partials/head %>
+
+	<script type="text/javascript" language="javascript">
+        function FilterInput (event) {
+            var keyCode = ('which' in event) ? event.which : event.keyCode;
+
+            isAsterix = (keyCode == 222);
+			//alert(keyCode);
+            modifiers = (event.shiftKey);
+            return !isAsterix || modifiers;
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+<header>
+    <div class="page-header text-center">
+        <%if (currentuser != null) {%>
+			<h1><span class="fa fa-anchor"></span> User's '<%= currentuser %>' Production Lines </h1>
+		<%} else {%>
+			<h1><span class="fa fa-anchor"></span> User Production Lines </h1>	
+		<%} %>
+	</div>
+	<div class="page-header text-right">
+        <label>Welcome <%= user.local.username  + "(" + user.local.name + ")" %> </label>        
+		 <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+    </div>
+	
+	<%include ./partials/headerA %>
+	
+</header>
+    <!-- show any messages that come back with authentication -->
+    <% if (message.length > 0) { %>
+		<div class="alert alert-danger"> <%= message %> </div>
+    <% } %>
+	<% if ((status != null) && (status.length > 0)) { %>
+		<div class="alert alert-info"><%= status %></div>
+    <% } %>
+    <div class="row" align="center">
+      <form action="/uprodlines" method="post" name="form">
+	   <% if(users != null){ %>
+			 <select name="selecteduser" id="selecteduser">
+				<%for ( var i = 0; i < users.length; i++ )
+				{
+					var selected = ( users[i]["UserCode"] == currentuser ) ? "selected" : ""; %>
+					<option value="<%=users[i]["UserCode"]%>" <%=selected %>> <%=users[i]["UserCode"]%> </option>
+				<%} %>
+			</select>
+			<button type="submit" class="btn btn-warning btn-lg" name="uplFormSubmit" value="UpdateForUser">Get Production Lines</button>
+			<hr>
+		<%} %>
+		<%if ((filter != null) && (filter != '')) {%>
+			<label>Applied filter : '<%=filter%>'</label>
+			<hr>
+		<%}%>
+		<% if(items != null){  %>        
+			<table>	
+				<tr>
+					<td><input type="text" name="filterProdLineCode" onkeydown="return FilterInput (event)"></input></td>
+					<td><button type="submit" class="btn btn-warning btn-lg" name="uplFormSubmit" value="FilterForUser">Apply filter</button></td>
+				</tr>
+				<tr>
+					<td><label>Production Line Code &nbsp &nbsp</label></td>
+					<td>&nbsp &nbsp <input type = "checkbox" name="checkbox`~`0`~`0" onclick="javascript:checkAll('form','`~`0');"></input><label>View History Data &nbsp &nbsp</label></td>
+					<td>&nbsp &nbsp <input type = "checkbox" name="checkbox`~`1`~`1" onclick="javascript:checkAll('form','`~`1');"></input><label>Modify Quota &nbsp &nbsp</label></td>
+					<td>&nbsp &nbsp <input type = "checkbox" name="checkbox`~`2`~`2" onclick="javascript:checkAll('form','`~`2');"></input><label>Modify Produced &nbsp &nbsp</label></td>
+				</tr>
+				<% for(var i = 0;i < items.length; i++) { %>
+					<tr>
+						<td>
+							<%= items[i]["ProdLineCode"] + '   ' %> 
+							<input type="hidden" name="<%="lbl_" + items[i]["ProdLineCode"] %>" value="<%="lbl_" + items[i]["ProdLineCode"] %>"></input>
+						</td>
+						<% var rights = items[i]["Rights"];
+							if (rights == null) { %>
+								<td align="center"><input type="checkbox" name="<%= items[i]["ProdLineCode"] + "`~`0"%>" value = "<%= items[i]["ProdLineCode"] + "`~`0" %>"> </input> </td>
+								<td align="center"><input type="checkbox" name="<%= items[i]["ProdLineCode"] + "`~`1"%>" value = "<%= items[i]["ProdLineCode"] + "`~`1" %>"> </input> </td>
+								<td align="center"><input type="checkbox" name="<%= items[i]["ProdLineCode"] + "`~`2"%>" value = "<%= items[i]["ProdLineCode"] + "`~`2" %>"> </input> </td>
+							<%} else {
+								if ((rights & 1) != 0) { %>
+									<td align="center"><input type="checkbox" name="<%= items[i]["ProdLineCode"] + "`~`0"%>" value = "<%= items[i]["ProdLineCode"] + "`~`0" %>" checked> </input> </td>
+								<% } else { %>
+									<td align="center"><input type="checkbox" name="<%= items[i]["ProdLineCode"] + "`~`0"%>" value = "<%= items[i]["ProdLineCode"] + "`~`0" %>"> </input> </td>
+								<%}
+								if ((rights & 2) != 0) { %>
+									<td align="center"><input type="checkbox" name="<%= items[i]["ProdLineCode"] + "`~`1"%>" value = "<%= items[i]["ProdLineCode"] + "`~`1" %>" checked> </input> </td>
+								<% } else { %>
+									<td align="center"><input type="checkbox" name="<%= items[i]["ProdLineCode"] + "`~`1"%>" value = "<%= items[i]["ProdLineCode"] + "`~`1" %>"> </input> </td>
+								<%}
+								if ((rights & 4) != 0) { %>
+									<td align="center"><input type="checkbox" name="<%= items[i]["ProdLineCode"] + "`~`2"%>" value = "<%= items[i]["ProdLineCode"] + "`~`2" %>" checked> </input> </td>
+								<% } else { %>
+									<td align="center"><input type="checkbox" name="<%= items[i]["ProdLineCode"] + "`~`2"%>" value = "<%= items[i]["ProdLineCode"] + "`~`2" %>"> </input> </td>
+								<%}
+							} %>
+					</tr>             
+            
+				<% } %>
+			</table>
+			<button type="submit" class="btn btn-warning btn-lg" name="uplFormSubmit" value="Modify">Update</button>
+		<%} %>
+	  </form>
+    </div>
+</div>
+<script type="text/javascript" language="javascript">
+function checkAll(formname,filter)
+{
+  var checkboxes = new Array(); 
+  var checktoggle = false;
+  checkboxes = document[formname].getElementsByTagName('input');
+
+  for (var i=0; i<checkboxes.length; i++)  {
+		if ((checkboxes[i].type == 'checkbox') && (checkboxes[i].name == 'checkbox' + filter + filter)){
+			checktoggle = checkboxes[i].checked;
+		}
+  }
+  for (var i=0; i<checkboxes.length; i++)  {
+    if (((checkboxes[i].type == 'checkbox') && 
+		(checkboxes[i].name.indexOf(filter) >=0)) && 
+		(checkboxes[i].name != 'checkbox' + filter + filter))  {
+      checkboxes[i].checked = checktoggle;
+    }
+  }
+}
+
+  
+
+</script>
+ <footer>
+        <% include ./partials/footer %>
+ </footer>
+</body>
+</html>
